@@ -23,7 +23,7 @@ Ce projet t'apprend à manipuler les **processus**, les **pipes** et la **duplic
 Cloner le repo :
 
 ```sh
-git clone https://github.com/votre-repo/pipex.git && cd pipex
+git clone https://github.com/mbah24-dev/Pipex.git && cd Pipex
 ```
 
 Compiler avec :

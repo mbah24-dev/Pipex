@@ -1,10 +1,10 @@
-NAME      ?= Pipex
+NAME      ?= pipex
 CC         = cc
 DIR        = src
 INC        = inc
-CFLAGS     = -Wall -Werror -Wextra -I ./
+CFLAGS     = -Wall -Werror -Wextra -I $(INC)
 HEADER     = $(INC)/Pipex.h 
-SRC        = $(DIR)/app/core/core.hello_word.c $(DIR)/main.c 
+SRC        = $(DIR)/main.c 
 
 OBJS       = $(SRC:.c=.o)
 

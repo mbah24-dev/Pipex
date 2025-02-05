@@ -2,5 +2,6 @@ Pipex est un projet que vous rencontrerez probablement au cours de votre voyage 
 et qui pourrait vous donner quelques maux de tête.
 Son but est de vous apprendre quelques opérations UNIX de base,
 et vous aidera grandement à terminer Minishell (un projet obligatoire auquel vous serez confronté plus tard).
-
+Pipex se concentre sur trois concepts principaux : les pipelines, les processus enfants et l'exécution de commandes.
+et vous aidera grandement à terminer Minishell (un projet obligatoire auquel vous serez confronté plus tard).
 Pipex se concentre sur trois concepts principaux : les pipelines, les processus enfants et l'exécution de commandes.

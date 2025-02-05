@@ -15,11 +15,7 @@
 int	execute_cmd(t_cmd cmd)
 {
 	if (access(cmd.path, X_OK) != -1)
-	{
-		if (execve(cmd.path, cmd.args, NULL) == -1)
-			return (ERROR);
-		return (OK);
-	}
+		execve(cmd.path, cmd.args, NULL);
 	return (ERROR);
 }
 
@@ -33,14 +29,9 @@ int	duplicate_fd(int old, int new)
 
 int	exec_pipex(t_pipex *pipex)
 {
-	int		i;
 	pid_t	pid;
 	int		fd[2];
-	char	*line;
 
-	(void)i;
-	(void)line;
-	pipe(fd);
 	if (pipe(fd) == -1)
 		exit_with_error(PIPE_ERR, pipex);
 	pid = fork();
@@ -48,22 +39,24 @@ int	exec_pipex(t_pipex *pipex)
 		exit_with_error(FORK_ERR, pipex);
 	if (pid == 0)
 	{
-		close(fd[0]);
-		duplicate_fd(fd[1], STDOUT_FILENO);
+		close_file(fd[0]);
+		if (duplicate_fd(fd[1], STDOUT_FILENO) == ERROR)
+			exit_with_error(DUP2_ERR, pipex);
+		if (duplicate_fd(pipex->in_fd, STDIN_FILENO) == ERROR)
+			exit_with_error(DUP2_ERR, pipex);
 		execute_cmd(pipex->cmds[0]);
-		close(fd[1]);
-		exit(OK);
+		clean_pipex(pipex);
+		exit(ERROR);
 	}
 	else
 	{
-		close(fd[1]);
-		duplicate_fd(fd[0], STDOUT_FILENO);
-		duplicate_fd(pipex->out_fd, fd[0]);
-		i = 0;
-		while (1)
-		{
-			line = 0;
-		}
+		close_file(fd[1]);
+		if (duplicate_fd(fd[0], STDIN_FILENO) == ERROR)
+			exit_with_error(DUP2_ERR, pipex);
+		if (duplicate_fd(pipex->out_fd, STDOUT_FILENO) == ERROR)
+			exit_with_error(DUP2_ERR, pipex);
+		execute_cmd(pipex->cmds[1]);
+		waitpid(pid, NULL, 0);
 	}
 	return (0);
 }

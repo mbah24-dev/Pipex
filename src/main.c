@@ -25,9 +25,9 @@ int	open_file(char *path, char flag, t_pipex *pipex)
 	int	fd;
 
 	if (flag == 1)
-		fd = open(path, O_WRONLY);
+		fd = open(path, O_RDONLY);
 	else
-		fd = open(path, O_WRONLY | O_CREAT, 0644);
+		fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 		exit_with_error(FILE_ERR, pipex);
 	return (fd);
@@ -64,6 +64,8 @@ int	main(int argc, char **argv, char **env)
 	if ((argc - 1) >= 4)
 	{
 		pipex = init_pipex(argc, argv, env);
+		if (pipex)
+			exec_pipex(pipex);
 		clean_pipex(pipex);
 		return (OK);
 	}

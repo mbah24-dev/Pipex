@@ -73,4 +73,9 @@ t_cmd	*fill_cmd(char **str_cmd, char **env);
 /* app.core.cleanup.c functions */
 void	clean_pipex(t_pipex *pipex);
 
+/* app._exec_pipex.c functions */
+int		exec_pipex(t_pipex *pipex);
+int		execute_cmd(t_cmd cmd);
+int		duplicate_fd(int old, int new);
+
 #endif

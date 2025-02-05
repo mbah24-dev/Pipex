@@ -61,7 +61,7 @@ int	main(int argc, char **argv, char **env)
 {
 	t_pipex	*pipex;
 
-	if ((argc - 1) == 4)
+	if ((argc - 1) >= 4)
 	{
 		pipex = init_pipex(argc, argv, env);
 		clean_pipex(pipex);

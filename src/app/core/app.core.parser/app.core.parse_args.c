@@ -46,6 +46,6 @@ char	**get_all_commands(int argc, char **argv)
 		commands[i - 2] = ft_strdup(argv[i]);
 		i++;
 	}
-	commands[i] = NULL;
+	commands[i - 2] = NULL;
 	return (commands);
 }

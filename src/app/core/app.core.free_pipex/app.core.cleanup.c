@@ -21,10 +21,8 @@ void	clean_pipex(t_pipex *pipex)
 		return ;
 	if (pipex->cmds)
 	{
-		while (pipex->cmds[i].name && pipex->cmds[i].path)
+		while (pipex->cmds[i].name)
 		{
-			if (pipex->cmds[i].name)
-				free(pipex->cmds[i].name);
 			if (pipex->cmds[i].path)
 				free(pipex->cmds[i].path);
 			if (pipex->cmds[i].args)

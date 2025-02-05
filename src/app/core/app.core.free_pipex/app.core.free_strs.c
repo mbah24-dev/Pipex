@@ -6,8 +6,23 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 15:04:56 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/04 15:05:22 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/05 00:16:47 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Pipex.h"
+
+void	free_strs(char **strs)
+{
+	int	i;
+
+	i = 0;
+	if (!strs)
+		return ;
+	while (strs[i])
+	{
+		free(strs[i]);
+		i++;
+	}
+	free(strs);
+}

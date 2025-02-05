@@ -6,7 +6,7 @@
 #    By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/04 16:08:05 by mbah              #+#    #+#              #
-#    Updated: 2025/02/04 16:08:07 by mbah             ###   ########.fr        #
+#    Updated: 2025/02/04 21:39:50 by mbah             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,9 +16,10 @@ DIR        = src
 INC        = inc
 LIBFT_H    = lib/libft/libft.h
 LIBFT_A    = lib/libft/libft.a
-CFLAGS     = -Wall -Werror -Wextra -I $(INC)
+CFLAGS     = -Wall -Werror -Wextra -I $(INC) -g3
 HEADER     = $(INC)/Pipex.h $(INC)/libft.h  $(LIBFT_H)
-SRC        = $(DIR)/app/core/app.core.free_pipex/app.core.cleanup.c $(DIR)/app/core/app.core.free_pipex/app.core.free_strs.c $(DIR)/main.c 
+SRC        = $(DIR)/app/core/app.core.parser/app.core.fill_cmd.c $(DIR)/app/core/app.core.parser/app.core.parse_args.c $(DIR)/app/core/app.core.free_pipex/app.core.cleanup.c \
+			 $(DIR)/app/core/app.core.free_pipex/app.core.free_strs.c $(DIR)/main.c 
 
 OBJS       = $(SRC:.c=.o)
 

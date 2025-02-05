@@ -6,7 +6,7 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 10:37:11 by mbah              #+#    #+#             */
-/*   Updated: 2024/11/18 16:19:45 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/04 20:59:26 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ char	**ft_split(const char *s, char c)
 	int		i;
 	char	**result;
 
+	if (!s)
+		return (NULL);
 	result = (char **) malloc((ft_countword(s, c) + 1) * sizeof(char *));
 	if (!result)
 		return (NULL);

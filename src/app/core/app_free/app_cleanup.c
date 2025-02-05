@@ -1,28 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   app.core.free_strs.c                               :+:      :+:    :+:   */
+/*   app_cleanup.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/04 15:04:56 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/05 00:16:47 by mbah             ###   ########.fr       */
+/*   Created: 2025/02/04 15:05:53 by mbah              #+#    #+#             */
+/*   Updated: 2025/02/05 15:46:56 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Pipex.h"
 
-void	free_strs(char **strs)
+void	clean_pipex(t_pipex *pipex)
 {
 	int	i;
 
 	i = 0;
-	if (!strs)
+	if (!pipex)
 		return ;
-	while (strs[i])
+	if (pipex->cmds)
 	{
-		free(strs[i]);
-		i++;
+		while (pipex->cmds[i].name)
+		{
+			if (pipex->cmds[i].path)
+				free(pipex->cmds[i].path);
+			if (pipex->cmds[i].args)
+				free_strs(pipex->cmds[i].args);
+			i++;
+		}
+		free(pipex->cmds);
 	}
-	free(strs);
+	close_file(pipex->in_fd);
+	close_file(pipex->out_fd);
+	free(pipex);
 }

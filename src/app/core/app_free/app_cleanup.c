@@ -6,7 +6,7 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 15:05:53 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/05 15:46:56 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/06 20:29:13 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,5 @@ void	clean_pipex(t_pipex *pipex)
 		}
 		free(pipex->cmds);
 	}
-	close_file(pipex->in_fd);
-	close_file(pipex->out_fd);
 	free(pipex);
 }

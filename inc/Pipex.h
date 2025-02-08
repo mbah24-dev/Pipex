@@ -6,7 +6,7 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 21:08:42 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/05 15:52:47 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/06 19:08:59 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdlib.h>
 # include <sys/wait.h>
 # include "libft.h"
+# include "get_next_line.h"
 
 # define MALLOC_ERR   "Error: malloc failed "
 # define ARG_ERR      "Error: invalid number of arguments "
@@ -57,7 +58,8 @@ typedef struct s_pipex
 /* main.c functions */
 void	exit_with_error(char *err_msg, t_pipex *pipex);
 int		open_file(char *path, char flag, t_pipex *pipex);
-void	close_file(int fd);
+void	close_fd(int fd);
+t_pipex	*init_pipex(int argc, char **argv, char **env);
 
 /* app.core.free_strs.c functions */
 void	free_strs(char **strs);
@@ -66,6 +68,7 @@ void	free_strs(char **strs);
 char	*get_infile_path(char **argv, t_pipex *pipex);
 char	**get_all_commands(int argc, char **argv);
 char	*get_output_path(int argc, char **argv, t_pipex *pipex);
+int		get_nb_pipes(t_pipex *pipex);
 
 /* app.core.fill_cmd.c functions */
 t_cmd	*fill_cmd(char **str_cmd, char **env);
@@ -74,8 +77,13 @@ t_cmd	*fill_cmd(char **str_cmd, char **env);
 void	clean_pipex(t_pipex *pipex);
 
 /* app._exec_pipex.c functions */
-int		exec_pipex(t_pipex *pipex);
+void	exec_pipex(t_pipex *pipex);
 int		execute_cmd(t_cmd cmd);
 int		duplicate_fd(int old, int new);
+void	child_process(t_pipex *pipex, int *fd, int cmd_idx);
+void	parent_process(t_pipex *pipex, int *fd, int cmd_idx);
+
+/* app._exec_pipex_bonus.c functions */
+void	exec_multiple_cmd_heredoc(t_pipex *pipex, int argc, char **argv);
 
 #endif

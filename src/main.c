@@ -6,7 +6,7 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 21:08:29 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/05 00:17:07 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/06 19:07:20 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,13 @@ int	open_file(char *path, char flag, t_pipex *pipex)
 	return (fd);
 }
 
-void	close_file(int fd)
+void	close_fd(int fd)
 {
 	if (close(fd) == -1)
 		exit_with_error(CLOSE_ERR, NULL);
 }
 
-static t_pipex	*init_pipex(int argc, char **argv, char **env)
+t_pipex	*init_pipex(int argc, char **argv, char **env)
 {
 	char	**all_cmds;
 	t_pipex	*pipex;
@@ -61,10 +61,10 @@ int	main(int argc, char **argv, char **env)
 {
 	t_pipex	*pipex;
 
-	if ((argc - 1) >= 4)
+	if ((argc - 1) == 4)
 	{
 		pipex = init_pipex(argc, argv, env);
-		if (pipex)
+		if (pipex && get_nb_pipes(pipex) - 1 == 1)
 			exec_pipex(pipex);
 		clean_pipex(pipex);
 		return (OK);

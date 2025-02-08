@@ -6,11 +6,23 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 15:14:08 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/05 15:46:42 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/06 18:28:03 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Pipex.h"
+
+int	get_nb_pipes(t_pipex *pipex)
+{
+	int	nb_pipes;
+
+	nb_pipes = 0;
+	if (!pipex || !pipex->cmds)
+		return (nb_pipes);
+	while (pipex->cmds[nb_pipes].name)
+		nb_pipes++;
+	return (nb_pipes);
+}
 
 char	*get_infile_path(char **argv, t_pipex *pipex)
 {

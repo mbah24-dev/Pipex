@@ -6,7 +6,7 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 16:13:17 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/06 21:26:55 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/08 18:07:18 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void	exec_multiple_cmd_heredoc(t_pipex *pipex, int argc, char **argv)
 			if (duplicate_fd(pipex->in_fd, STDIN_FILENO) == ERROR)
 				exit_with_error(DUP2_ERR, pipex);
 		}
-		while (i < argc - 2)
+		while (i < get_nb_pipes(pipex) - 1)
 		{
 			child_sub_process(pipex, i);
 			i++;
@@ -103,6 +103,7 @@ void	exec_multiple_cmd_heredoc(t_pipex *pipex, int argc, char **argv)
 		if (duplicate_fd(pipex->out_fd, STDOUT_FILENO) == ERROR)
 			exit_with_error(DUP2_ERR, pipex);
 		execute_cmd(pipex->cmds[i]);
+		
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:37:43 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/05 18:19:03 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/06 16:48:01 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,33 @@ int	duplicate_fd(int old, int new)
 {
 	if (dup2(old, new) == -1)
 		return (ERROR);
-	close_file(old);
+	close_fd(old);
 	return (OK);
 }
 
-int	exec_pipex(t_pipex *pipex)
+void	child_process(t_pipex *pipex, int *fd, int cmd_idx)
+{
+	close_fd(fd[0]);
+	if (duplicate_fd(fd[1], STDOUT_FILENO) == ERROR)
+		exit_with_error(DUP2_ERR, pipex);
+	if (duplicate_fd(pipex->in_fd, STDIN_FILENO) == ERROR)
+		exit_with_error(DUP2_ERR, pipex);
+	execute_cmd(pipex->cmds[cmd_idx]);
+	clean_pipex(pipex);
+	exit(ERROR);
+}
+
+void	parent_process(t_pipex *pipex, int *fd, int cmd_idx)
+{
+	close_fd(fd[1]);
+	if (duplicate_fd(fd[0], STDIN_FILENO) == ERROR)
+		exit_with_error(DUP2_ERR, pipex);
+	if (duplicate_fd(pipex->out_fd, STDOUT_FILENO) == ERROR)
+		exit_with_error(DUP2_ERR, pipex);
+	execute_cmd(pipex->cmds[cmd_idx]);
+}
+
+void	exec_pipex(t_pipex *pipex)
 {
 	pid_t	pid;
 	int		fd[2];
@@ -38,25 +60,10 @@ int	exec_pipex(t_pipex *pipex)
 	if (pid == -1)
 		exit_with_error(FORK_ERR, pipex);
 	if (pid == 0)
-	{
-		close_file(fd[0]);
-		if (duplicate_fd(fd[1], STDOUT_FILENO) == ERROR)
-			exit_with_error(DUP2_ERR, pipex);
-		if (duplicate_fd(pipex->in_fd, STDIN_FILENO) == ERROR)
-			exit_with_error(DUP2_ERR, pipex);
-		execute_cmd(pipex->cmds[0]);
-		clean_pipex(pipex);
-		exit(ERROR);
-	}
+		child_process(pipex, fd, 0);
 	else
 	{
-		close_file(fd[1]);
-		if (duplicate_fd(fd[0], STDIN_FILENO) == ERROR)
-			exit_with_error(DUP2_ERR, pipex);
-		if (duplicate_fd(pipex->out_fd, STDOUT_FILENO) == ERROR)
-			exit_with_error(DUP2_ERR, pipex);
-		execute_cmd(pipex->cmds[1]);
+		parent_process(pipex, fd, 1);
 		waitpid(pid, NULL, 0);
 	}
-	return (0);
 }

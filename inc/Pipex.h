@@ -6,7 +6,7 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 21:08:42 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/06 19:08:59 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/17 14:31:38 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,5 +85,7 @@ void	parent_process(t_pipex *pipex, int *fd, int cmd_idx);
 
 /* app._exec_pipex_bonus.c functions */
 void	exec_multiple_cmd_heredoc(t_pipex *pipex, int argc, char **argv);
+
+void	here_doc_parent_process(int *fd, t_pipex *pipex);
 
 #endif

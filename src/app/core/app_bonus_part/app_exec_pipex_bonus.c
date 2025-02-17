@@ -6,7 +6,7 @@
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 16:13:17 by mbah              #+#    #+#             */
-/*   Updated: 2025/02/08 18:07:18 by mbah             ###   ########.fr       */
+/*   Updated: 2025/02/17 14:35:18 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,12 +68,7 @@ static void	here_doc(t_pipex *pipex, char *limiter)
 		}
 	}
 	else
-	{
-		close_fd(fd[1]);
-		if (duplicate_fd(fd[0], STDIN_FILENO) == ERROR)
-			exit_with_error(DUP2_ERR, pipex);
-		wait(NULL);
-	}
+		here_doc_parent_process(fd, pipex);
 }
 
 void	exec_multiple_cmd_heredoc(t_pipex *pipex, int argc, char **argv)
@@ -85,8 +80,6 @@ void	exec_multiple_cmd_heredoc(t_pipex *pipex, int argc, char **argv)
 		if (ft_strncmp(argv[1], "here_doc", 8) == 0)
 		{
 			i = 1;
-			if (argc == 5)
-				exit_with_error(ARG_ERR, pipex);
 			here_doc(pipex, argv[2]);
 		}
 		else
@@ -103,7 +96,6 @@ void	exec_multiple_cmd_heredoc(t_pipex *pipex, int argc, char **argv)
 		if (duplicate_fd(pipex->out_fd, STDOUT_FILENO) == ERROR)
 			exit_with_error(DUP2_ERR, pipex);
 		execute_cmd(pipex->cmds[i]);
-		
 	}
 }
 
@@ -111,7 +103,7 @@ int	main(int argc, char **argv, char **env)
 {
 	t_pipex	*pipex;
 
-	if ((argc - 1) > 4)
+	if ((argc - 1) >= 4)
 	{
 		pipex = init_pipex(argc, argv, env);
 		if (pipex)

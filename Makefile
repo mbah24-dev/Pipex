@@ -6,7 +6,7 @@
 #    By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/04 16:08:05 by mbah              #+#    #+#              #
-#    Updated: 2025/02/06 19:05:11 by mbah             ###   ########.fr        #
+#    Updated: 2025/02/17 14:33:31 by mbah             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ SRC        = $(DIR)/app/core/app_parser/app_fill_cmd.c $(DIR)/app/core/app_parse
 B_SRC      =  $(DIR)/app/core/app_parser/app_fill_cmd.c $(DIR)/app/core/app_parser/app_parse_args.c \
 			 $(DIR)/app/core/app_free/app_cleanup.c $(DIR)/app/core/app_free/app_free_strs.c  \
 			 ./lib/gnl/get_next_line.c ./lib/gnl/get_next_line_utils.c $(DIR)/app/core/app_bonus_part/app_exec_pipex_bonus.c \
-			  $(DIR)/app/core/app_bonus_part/app_exec_pipex_utils_bonus.c
+			$(DIR)/app/core/app_bonus_part/app_exec_pipex_utils_bonus.c $(DIR)/app/core/app_bonus_part/app_here_doc_utils_bonus.c 
 			 
 OBJS       = $(SRC:.c=.o)
 

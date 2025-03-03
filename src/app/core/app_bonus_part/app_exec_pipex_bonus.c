@@ -12,53 +12,47 @@
 
 #include "Pipex.h"
 
-int	execute_cmd(t_cmd cmd)
-{
-	if (access(cmd.path, X_OK) != -1)
-		execve(cmd.path, cmd.args, NULL);
-	return (ERROR);
-}
-
-static void	child_sub_process(t_pipex *pipex, int cmd_idx)
+static void	child_sub_process(char *argv, char **env, t_fds *fds)
 {
 	pid_t	pid;
 	int		fd[2];
 
 	if (pipe(fd) == -1)
-		exit_with_error(PIPE_ERR, pipex);
+		exit_with_error(fds);
 	pid = fork();
 	if (pid == -1)
-		exit_with_error(FORK_ERR, pipex);
+		exit_with_error(fds);
 	if (pid == 0)
 	{
-		close_fd(fd[0]);
+		close_fd(fd[0], fds);
+		close_fd(fds->out, fds);
 		if (duplicate_fd(fd[1], STDOUT_FILENO) == ERROR)
-			exit_with_error(DUP2_ERR, pipex);
-		execute_cmd(pipex->cmds[cmd_idx]);
+			exit_with_error(fds);
+		execute_cmd(argv, env, fds);
 	}
 	else
 	{
-		close_fd(fd[1]);
+		close_fd(fd[1], fds);
 		if (duplicate_fd(fd[0], STDIN_FILENO) == ERROR)
-			exit_with_error(DUP2_ERR, pipex);
+			exit_with_error(fds);
 		waitpid(pid, NULL, 0);
 	}
 }
 
-static void	here_doc(t_pipex *pipex, char *limiter)
+static void	here_doc(char *limiter, t_fds *fds)
 {
 	int		fd[2];
 	pid_t	pid;
 	char	*line;
 
 	if (pipe(fd) == -1)
-		exit_with_error(PIPE_ERR, pipex);
+		exit_with_error(fds);
 	pid = fork();
 	if (pid == -1)
-		exit_with_error(FORK_ERR, pipex);
+		exit_with_error(fds);
 	if (pid == 0)
 	{
-		close_fd(fd[0]);
+		close_fd(fd[0], fds);
 		while (1)
 		{
 			line = get_next_line(0);
@@ -68,48 +62,55 @@ static void	here_doc(t_pipex *pipex, char *limiter)
 		}
 	}
 	else
-		here_doc_parent_process(fd, pipex);
+		here_doc_parent_process(fd, fds);
 }
 
-void	exec_multiple_cmd_heredoc(t_pipex *pipex, int argc, char **argv)
+void	exec_multiple_cmd_heredoc(int argc, char **argv, char **env, t_fds *fds)
 {
 	int	i;
 
-	if (argc >= 5)
+	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
 	{
-		if (ft_strncmp(argv[1], "here_doc", 8) == 0)
-		{
-			i = 1;
-			here_doc(pipex, argv[2]);
-		}
-		else
-		{
-			i = 0;
-			if (duplicate_fd(pipex->in_fd, STDIN_FILENO) == ERROR)
-				exit_with_error(DUP2_ERR, pipex);
-		}
-		while (i < get_nb_pipes(pipex) - 1)
-		{
-			child_sub_process(pipex, i);
-			i++;
-		}
-		if (duplicate_fd(pipex->out_fd, STDOUT_FILENO) == ERROR)
-			exit_with_error(DUP2_ERR, pipex);
-		execute_cmd(pipex->cmds[i]);
+		i = 3;
+		fds->out = open_file(argv[argc - 1], 0);
+		fds->in = -1;
+		here_doc(argv[2], fds);
 	}
+	else
+	{
+		i = 2;
+		fds->in = open_file(argv[1], 2);
+		fds->out = open_file(argv[argc - 1], 1);
+		if (duplicate_fd(fds->in, STDIN_FILENO) == ERROR)
+			exit_with_error(fds);
+	}
+	while (i < argc - 2)
+		child_sub_process(argv[i++], env, fds);
+	if (duplicate_fd(fds->out, STDOUT_FILENO) == ERROR)
+		exit_with_error(fds);
+	if (ft_strncmp(argv[1], "here_doc", 8) != 0)
+		close_fd(fds->in, fds);
+	execute_cmd(argv[argc - 2], env, fds);
 }
 
 int	main(int argc, char **argv, char **env)
 {
-	t_pipex	*pipex;
+	t_fds	*fds;
 
+	fds = malloc(sizeof(t_fds));
+	if (!fds)
+		exit(-1);
+	fds->in = -1;
+	fds->out = -1;
 	if ((argc - 1) >= 4)
 	{
-		pipex = init_pipex(argc, argv, env);
-		if (pipex)
-			exec_multiple_cmd_heredoc(pipex, argc, argv);
-		clean_pipex(pipex);
+		exec_multiple_cmd_heredoc(argc, argv, env, fds);
+		free(fds);
 		return (OK);
 	}
-	exit_with_error(ARG_ERR, NULL);
+	{
+		free(fds);
+		ft_putstr_fd("Error: Bad arguments\n", 2);
+	}
+	return (ERROR);
 }

@@ -12,17 +12,10 @@
 
 #include "Pipex.h"
 
-void	exit_with_error(char *err_msg, t_pipex *pipex)
+int	open_file(char *path, char flag)
 {
-	perror(err_msg);
-	if (pipex)
-		clean_pipex(pipex);
-	exit(ERROR);
-}
-
-int	open_file(char *path, char flag, t_pipex *pipex)
-{
-	int	fd;
+	int		fd;
+	t_fds	*fds;
 
 	fd = 0;
 	if (flag == 0)
@@ -32,49 +25,19 @@ int	open_file(char *path, char flag, t_pipex *pipex)
 	else if (flag == 2)
 		fd = open(path, O_RDONLY, 0777);
 	if (fd == -1)
-		exit_with_error(FILE_ERR, pipex);
+	{
+		fds = malloc(sizeof(t_fds));
+		fds->in = -1;
+		fds->out = -1;
+		exit_with_error(fds);
+	}
 	return (fd);
-}
-
-void	close_fd(int fd)
-{
-	if (fd != 0)
-		if (close(fd) == -1)
-			exit_with_error(CLOSE_ERR, NULL);
-}
-
-t_pipex	*init_pipex(int argc, char **argv, char **env)
-{
-	char	**all_cmds;
-	t_pipex	*pipex;
-
-	all_cmds = get_all_commands(argc, argv);
-	pipex = (t_pipex *) malloc(sizeof(t_pipex));
-	if (!pipex)
-		exit_with_error(MALLOC_ERR, NULL);
-	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
-	{
-		pipex->output = get_output_path(argc, argv, pipex);
-		pipex->out_fd = open_file(pipex->output, 0, pipex);
-		pipex->infile = ft_strdup("");
-		pipex->in_fd = open_file(pipex->infile, 3, pipex);
-	}
-	else
-	{
-		pipex->output = get_output_path(argc, argv, pipex);
-		pipex->out_fd = open_file(pipex->output, 1, pipex);
-		pipex->infile = get_infile_path(argv, pipex);
-		pipex->in_fd = open_file(pipex->infile, 2, pipex);
-	}
-	pipex->cmds = fill_cmd(all_cmds, env);
-	free_strs(all_cmds);
-	return (pipex);
 }
 
 int	duplicate_fd(int old, int new)
 {
 	if (dup2(old, new) == -1)
 		return (ERROR);
-	close_fd(old);
+	close_fd(old, NULL);
 	return (OK);
 }

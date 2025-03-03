@@ -12,58 +12,48 @@
 
 #include "Pipex.h"
 
-int	execute_cmd(t_cmd cmd)
+static void	child_process(char **argv, char **env, int *fd, t_fds *fds)
 {
-	if (access(cmd.path, X_OK) != -1)
-		execve(cmd.path, cmd.args, NULL);
-	return (ERROR);
+	int	fd_in;
+
+	fd_in = open(argv[1], O_RDONLY, 0777);
+	if (fd_in == -1)
+		exit_with_error(fds);
+	dup2(fd[1], STDOUT_FILENO);
+	dup2(fd_in, STDIN_FILENO);
+	close_fd(fd_in, fds);
+	close_fd(fd[1], fds);
+	close_fd(fd[0], fds);
+	execute_cmd(argv[2], env, fds);
 }
 
-int	duplicate_fd(int old, int new)
+static void	parent_process(char **argv, char **envp, int *fd, t_fds *fds)
 {
-	if (dup2(old, new) == -1)
-		return (ERROR);
-	close_fd(old);
-	return (OK);
+	int	fd_out;
+
+	fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	if (fd_out == -1)
+		exit_with_error(fds);
+	dup2(fd[0], STDIN_FILENO);
+	dup2(fd_out, STDOUT_FILENO);
+	close_fd(fd[0], fds);
+	close_fd(fd[1], fds);
+	close_fd(fd_out, fds);
+	execute_cmd(argv[3], envp, fds);
 }
 
-void	child_process(t_pipex *pipex, int *fd, int cmd_idx)
+void	exec_pipex(char **argv, char **envp, t_fds *fds)
 {
-	close_fd(fd[0]);
-	if (duplicate_fd(fd[1], STDOUT_FILENO) == ERROR)
-		exit_with_error(DUP2_ERR, pipex);
-	if (duplicate_fd(pipex->in_fd, STDIN_FILENO) == ERROR)
-		exit_with_error(DUP2_ERR, pipex);
-	execute_cmd(pipex->cmds[cmd_idx]);
-	clean_pipex(pipex);
-	exit(ERROR);
-}
-
-void	parent_process(t_pipex *pipex, int *fd, int cmd_idx)
-{
-	close_fd(fd[1]);
-	if (duplicate_fd(fd[0], STDIN_FILENO) == ERROR)
-		exit_with_error(DUP2_ERR, pipex);
-	if (duplicate_fd(pipex->out_fd, STDOUT_FILENO) == ERROR)
-		exit_with_error(DUP2_ERR, pipex);
-	execute_cmd(pipex->cmds[cmd_idx]);
-}
-
-void	exec_pipex(t_pipex *pipex)
-{
-	pid_t	pid;
 	int		fd[2];
+	pid_t	pid;
 
 	if (pipe(fd) == -1)
-		exit_with_error(PIPE_ERR, pipex);
+		exit_with_error(fds);
 	pid = fork();
 	if (pid == -1)
-		exit_with_error(FORK_ERR, pipex);
+		exit_with_error(fds);
 	if (pid == 0)
-		child_process(pipex, fd, 0);
-	else
-	{
-		parent_process(pipex, fd, 1);
-		waitpid(pid, NULL, 0);
-	}
+		child_process(argv, envp, fd, fds);
+	waitpid(pid, NULL, 0);
+	parent_process(argv, envp, fd, fds);
 }

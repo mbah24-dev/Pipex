@@ -12,52 +12,75 @@
 
 #include "Pipex.h"
 
-int	get_nb_pipes(t_pipex *pipex)
+void	close_fd(int fd, t_fds *fds)
 {
-	int	nb_pipes;
-
-	nb_pipes = 0;
-	if (!pipex || !pipex->cmds)
-		return (nb_pipes);
-	while (pipex->cmds[nb_pipes].name)
-		nb_pipes++;
-	return (nb_pipes);
-}
-
-char	*get_infile_path(char **argv, t_pipex *pipex)
-{
-	char	*path;
-
-	path = argv[1];
-	if (access(path, F_OK | R_OK) == -1)
-		exit_with_error(PATH_ERR, pipex);
-	return (path);
-}
-
-char	*get_output_path(int argc, char **argv, t_pipex *pipex)
-{
-	char	*path;
-
-	path = argv[argc - 1];
-	if (access(path, F_OK) == 0 && access(path, W_OK) == -1)
-		exit_with_error(PATH_ERR, pipex);
-	return (path);
-}
-
-char	**get_all_commands(int argc, char **argv)
-{
-	char	**commands;
-	int		i;
-
-	commands = (char **) malloc(sizeof(char *) * (argc - 2));
-	if (!commands || !argv)
-		return (NULL);
-	i = 2;
-	while (i < argc - 1 && argv[i])
+	(void)fds;
+	if (fd != -1)
 	{
-		commands[i - 2] = ft_strdup(argv[i]);
+		if (close(fd) == -1)
+			perror("close err");
+	}
+}
+
+char	*find_path(char *cmd, char **env)
+{
+	char	**paths;
+	char	*path;
+	int		i;
+	char	*part_path;
+
+	i = 0;
+	while (ft_strnstr(env[i], "PATH", 4) == 0)
+		i++;
+	paths = ft_split(env[i] + 5, ':');
+	i = 0;
+	while (paths[i])
+	{
+		part_path = ft_strjoin(paths[i], "/");
+		path = ft_strjoin(part_path, cmd);
+		free(part_path);
+		if (access(path, F_OK) == 0)
+			return (path);
+		free(path);
 		i++;
 	}
-	commands[i - 2] = NULL;
-	return (commands);
+	i = -1;
+	while (paths[++i])
+		free(paths[i]);
+	free(paths);
+	return (0);
+}
+
+void	exit_with_error(t_fds *fds)
+{
+	if (fds != NULL)
+	{
+		if (fds->in != -1)
+			close_fd(fds->in, fds);
+		if (fds->out != -1)
+			close_fd(fds->out, fds);
+		free(fds);
+	}
+	perror("Error");
+	exit(EXIT_FAILURE);
+}
+
+void	execute_cmd(char *argv, char **env, t_fds *fds)
+{
+	char	**cmd;
+	int		i;
+	char	*path;
+
+	i = -1;
+	cmd = ft_split(argv, ' ');
+	path = find_path(cmd[0], env);
+	if (!path)
+	{
+		while (cmd[++i])
+			free(cmd[i]);
+		free(cmd);
+		exit_with_error(fds);
+	}
+	if (execve(path, cmd, env) == -1)
+		exit_with_error(fds);
 }

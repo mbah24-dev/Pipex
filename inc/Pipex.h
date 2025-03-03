@@ -21,71 +21,32 @@
 # include "libft.h"
 # include "get_next_line.h"
 
-# define MALLOC_ERR   "Error: malloc failed "
-# define ARG_ERR      "Error: invalid number of arguments "
-# define FILE_ERR     "Error: file cannot be opened "
-# define PIPE_ERR     "Error: pipe failed "
-# define FORK_ERR     "Error: fork failed "
-# define EXEC_ERR     "Error: command not found "
-# define SYNTAX_ERR   "Error: invalid syntax "
-# define PATH_ERR     "Error: PATH not found "
-# define DUP2_ERR     "Error: dup2 failed "
-# define CLOSE_ERR    "Error: close failed "
-# define WAIT_ERR     "Error: waitpid failed "
-
 enum e_bool
 {
 	OK = 0,
 	ERROR = 1
 };
 
-typedef struct s_cmd
+typedef struct s_fds
 {
-	char	*name;
-	char	**args;
-	char	*path;
-}			t_cmd;
-
-typedef struct s_pipex
-{
-	char	*infile;
-	char	*output;
-	int		in_fd;
-	int		out_fd;
-	t_cmd	*cmds;
-}			t_pipex;
-
-/* main.c functions */
-void	exit_with_error(char *err_msg, t_pipex *pipex);
-int		open_file(char *path, char flag, t_pipex *pipex);
-void	close_fd(int fd);
-t_pipex	*init_pipex(int argc, char **argv, char **env);
-
-/* app.core.free_strs.c functions */
-void	free_strs(char **strs);
+	int	in;
+	int	out;
+}		t_fds;
 
 /* app.core.parse_args.c functions */
-char	*get_infile_path(char **argv, t_pipex *pipex);
-char	**get_all_commands(int argc, char **argv);
-char	*get_output_path(int argc, char **argv, t_pipex *pipex);
-int		get_nb_pipes(t_pipex *pipex);
-
-/* app.core.fill_cmd.c functions */
-t_cmd	*fill_cmd(char **str_cmd, char **env);
-
-/* app.core.cleanup.c functions */
-void	clean_pipex(t_pipex *pipex);
+void	execute_cmd(char *argv, char **env, t_fds *fds);
+char	*find_path(char *cmd, char **env);
+void	close_fd(int fd, t_fds *fds);
+void	exit_with_error(t_fds *fds);
 
 /* app._exec_pipex.c functions */
-void	exec_pipex(t_pipex *pipex);
-int		execute_cmd(t_cmd cmd);
-int		duplicate_fd(int old, int new);
-void	child_process(t_pipex *pipex, int *fd, int cmd_idx);
-void	parent_process(t_pipex *pipex, int *fd, int cmd_idx);
+void	exec_pipex(char **argv, char **envp, t_fds *fds);
 
 /* app._exec_pipex_bonus.c functions */
-void	exec_multiple_cmd_heredoc(t_pipex *pipex, int argc, char **argv);
-
-void	here_doc_parent_process(int *fd, t_pipex *pipex);
+void	exec_multiple_cmd_heredoc(int argc, char **argv, char **env,
+			t_fds *fds);
+void	here_doc_parent_process(int *fd, t_fds *fds);
+int		duplicate_fd(int old, int new);
+int		open_file(char *path, char flag);
 
 #endif

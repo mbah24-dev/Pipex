@@ -12,10 +12,10 @@
 
 #include "Pipex.h"
 
-void	here_doc_parent_process(int *fd, t_pipex *pipex)
+void	here_doc_parent_process(int *fd, t_fds *fds)
 {
-	close_fd(fd[1]);
+	close_fd(fd[1], fds);
 	if (duplicate_fd(fd[0], STDIN_FILENO) == ERROR)
-		exit_with_error(DUP2_ERR, pipex);
+		exit_with_error(fds);
 	wait(NULL);
 }

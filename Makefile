@@ -16,7 +16,7 @@ DIR        = src
 INC        = inc
 LIBFT_H    = lib/libft/libft.h
 LIBFT_A    = lib/libft/libft.a
-CFLAGS     = -Wall -Werror -Wextra -I $(INC) -g3
+CFLAGS     = -Wall -Werror -Wextra -I $(INC)
 HEADER     = $(INC)/Pipex.h $(INC)/libft.h  $(LIBFT_H) $(INC)/get_next_line.h 
 SRC        = $(DIR)/app/core/app_parser/app_parse_args.c $(DIR)/app/core/app_execute/app_exec_pipex.c \
 			 $(DIR)/main.c 

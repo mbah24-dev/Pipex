@@ -76,11 +76,15 @@ void	execute_cmd(char *argv, char **env, t_fds *fds)
 	path = find_path(cmd[0], env);
 	if (!path)
 	{
+		ft_putstr_fd("pipex: command not found: ", 2);
+		ft_putendl_fd(cmd[0], 2);
 		while (cmd[++i])
 			free(cmd[i]);
 		free(cmd);
 		exit_with_error(fds);
 	}
 	if (execve(path, cmd, env) == -1)
+	{
 		exit_with_error(fds);
+	}
 }

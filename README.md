@@ -1,7 +1,7 @@
 # 🚀 Pipex - 42 Project
 
 <p align="center">
-  <img src="https://github.com/mbah24-dev/mbah24-dev/blob/main/42_badges/philosopherse.png" alt="philosophers 42 project badge"/>
+  <img src="https://github.com/mbah24-dev/mbah24-dev/blob/main/42_badges/pipexe.png" alt="Pipex 42 project badge"/>
 </p>
 
 Bienvenue sur **Pipex**, un projet du cursus **42** qui permet de recréer le fonctionnement du pipe `|` en ligne de commande ! 🔥

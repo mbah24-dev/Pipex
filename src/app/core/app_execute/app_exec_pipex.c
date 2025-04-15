@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pipex.h"
+#include "pipex.h"
 
 static void	child_process_one(char **argv, char **env, int *fd, t_fds *fds)
 {
@@ -19,7 +19,7 @@ static void	child_process_one(char **argv, char **env, int *fd, t_fds *fds)
 	{
 		close_fd(fd[1], fds);
 		close_fd(fd[0], fds);
-		exit_with_error(fds);
+		exit_with_error(fds, 1);
 	}
 	dup2(fd[1], STDOUT_FILENO);
 	dup2(fds->in, STDIN_FILENO);
@@ -36,7 +36,7 @@ static void	child_process_two(char **argv, char **envp, int *fd, t_fds *fds)
 	{
 		close_fd(fd[1], fds);
 		close_fd(fd[0], fds);
-		exit_with_error(fds);
+		exit_with_error(fds, 1);
 	}
 	dup2(fd[0], STDIN_FILENO);
 	dup2(fds->out, STDOUT_FILENO);
@@ -53,16 +53,16 @@ void	exec_pipex(char **argv, char **envp, t_fds *fds)
 	pid_t	child_pid_2;
 
 	if (pipe(fd) == -1)
-		exit_with_error(fds);
+		exit_with_error(fds, 1);
 	child_pid_1 = fork();
 	if (child_pid_1 == -1)
-		exit_with_error(fds);
+		exit_with_error(fds, 1);
 	if (child_pid_1 == 0)
 		child_process_one(argv, envp, fd, fds);
 	close_fd(fd[1], fds);
 	child_pid_2 = fork();
 	if (child_pid_2 == -1)
-		exit_with_error(fds);
+		exit_with_error(fds, 1);
 	if (child_pid_2 == 0)
 		child_process_two(argv, envp, fd, fds);
 	close_fd(fd[0], fds);

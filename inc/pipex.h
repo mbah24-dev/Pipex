@@ -18,7 +18,6 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/wait.h>
-# include "libft.h"
 # include "get_next_line.h"
 
 enum e_bool
@@ -37,7 +36,7 @@ typedef struct s_fds
 void	execute_cmd(char *argv, char **env, t_fds *fds);
 char	*find_path(char *cmd, char **env);
 void	close_fd(int fd, t_fds *fds);
-void	exit_with_error(t_fds *fds);
+void	exit_with_error(t_fds *fds, int flag);
 
 /* app._exec_pipex.c functions */
 void	exec_pipex(char **argv, char **envp, t_fds *fds);
@@ -48,5 +47,14 @@ void	exec_multiple_cmd_heredoc(int argc, char **argv, char **env,
 void	here_doc_parent_process(int *fd, t_fds *fds);
 int		duplicate_fd(int old, int new);
 int		open_file(char *path, char flag);
+
+/* utils lib */
+char	*ft_strnstr(const char *haystack, const char *needle, size_t len);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	**ft_split(const char *s, char c);
+void	ft_putstr_fd(char *str, int fd);
+int		only_spaces(const char *s);
+int		ft_isspace(char c);
+void	free_split(char **split);
 
 #endif

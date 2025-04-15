@@ -1,29 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd_back_bonus.c                             :+:      :+:    :+:   */
+/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbah <mbah@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/13 01:05:49 by mbah              #+#    #+#             */
-/*   Updated: 2024/11/13 18:07:18 by mbah             ###   ########.fr       */
+/*   Created: 2024/11/12 23:42:32 by mbah              #+#    #+#             */
+/*   Updated: 2024/11/12 23:46:06 by mbah             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <unistd.h>
+#include <stdlib.h>
 
-void	ft_lstadd_back(t_list **lst, t_list *new)
+void	ft_putstr_fd(char *str, int fd)
 {
-	t_list	*last_element;
+	int		i;
+	char	*copy;
 
-	if (lst && new)
+	i = 0;
+	while (str[i])
+		i++;
+	copy = (char *) malloc(sizeof(char) * (i + 2));
+	if (!copy)
+		return ;
+	i = 0;
+	while (str[i])
 	{
-		if (*lst == NULL)
-			*lst = new;
-		else
-		{
-			last_element = ft_lstlast(*lst);
-			last_element->next = new;
-		}
+		copy[i] = str[i];
+		i++;
 	}
+	copy[i] = '\n';
+	copy[i + 1] = '\0';
+	write(fd, copy, (i + 1));
+	free(copy);
 }

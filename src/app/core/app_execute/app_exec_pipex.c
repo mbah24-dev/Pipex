@@ -51,6 +51,7 @@ void	exec_pipex(char **argv, char **envp, t_fds *fds)
 	int		fd[2];
 	pid_t	child_pid_1;
 	pid_t	child_pid_2;
+	int		status[2];
 
 	if (pipe(fd) == -1)
 		exit_with_error(fds, 1);
@@ -66,7 +67,10 @@ void	exec_pipex(char **argv, char **envp, t_fds *fds)
 	if (child_pid_2 == 0)
 		child_process_two(argv, envp, fd, fds);
 	close_fd(fd[0], fds);
-	waitpid(child_pid_1, NULL, 0);
-	waitpid(child_pid_2, NULL, 0);
+	waitpid(child_pid_1, &status[0], 0);
+	waitpid(child_pid_2, &status[1], 0);
 	free(fds);
+	if (WIFEXITED(status[1]))
+		exit(WEXITSTATUS(status[1]));
+	exit(EXIT_FAILURE);
 }

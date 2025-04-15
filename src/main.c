@@ -17,6 +17,22 @@ int	ft_isspace(char c)
 	return ((c >= 9 && c <= 13) || c == ' ');
 }
 
+char	**get_line_content_path(char **env)
+{
+	int		i;
+	char	**paths;
+
+	i = 0;
+	while (env[i] && ft_strnstr(env[i], "PATH", 4) == 0)
+		i++;
+	if (!env[i])
+		return (NULL);
+	paths = ft_split(env[i] + 5, ':');
+	if (!paths)
+		return (NULL);
+	return (paths);
+}
+
 int	only_spaces(const char *s)
 {
 	while (*s)
@@ -28,7 +44,7 @@ int	only_spaces(const char *s)
 	return (1);
 }
 
-void	check_args(int argc, char **argv, t_fds *fds)
+void	check_args(int argc, char **av, t_fds *fds)
 {
 	char	*temp_join;
 	int		i;
@@ -41,11 +57,11 @@ void	check_args(int argc, char **argv, t_fds *fds)
 		i = -1;
 		while (++i < 2)
 		{
-			cmd = ft_split(argv[i + 2], ' ');
+			cmd = ft_split(av[i + 2], ' ');
 			if (!cmd)
 				exit_with_error(fds, 0);
 			if (!cmd[0])
-				temp_join = ft_strjoin("pipex: command not found: ", argv[i + 2]);
+				temp_join = ft_strjoin("pipex: command not found: ", av[i + 2]);
 			else
 				temp_join = ft_strjoin("pipex: command not found: ", cmd[0]);
 			ft_putstr_fd(temp_join, 2);
@@ -78,6 +94,8 @@ int	main(int argc, char **argv, char **env)
 	{
 		free(fds);
 		check_args(argc, argv, fds);
+		if (only_spaces(argv[3]))
+			exit(127);
 	}
 	return (0);
 }

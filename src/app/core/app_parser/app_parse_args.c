@@ -29,12 +29,7 @@ char	*find_path(char *cmd, char **env)
 	int		i;
 	char	*part_path;
 
-	i = 0;
-	while (env[i] && ft_strnstr(env[i], "PATH", 4) == 0)
-		i++;
-	if (!env[i])
-		return (NULL);
-	paths = ft_split(env[i] + 5, ':');
+	paths = get_line_content_path(env);
 	if (!paths)
 		return (NULL);
 	i = 0;
@@ -72,9 +67,11 @@ void	exit_with_error(t_fds *fds, int flag)
 
 void	free_split(char **split)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	if (!split)
-		return;
+		return ;
 	while (split[i])
 		free(split[i++]);
 	free(split);
@@ -96,11 +93,11 @@ void	execute_cmd(char *argv, char **env, t_fds *fds)
 	{
 		temp_join = ft_strjoin("pipex: command not found: ", cmd[0]);
 		ft_putstr_fd(temp_join, 2);
+		ft_putstr_fd("\n", 2);
 		free(temp_join);
-		while (cmd[++i])
-			free(cmd[i]);
-		free(cmd);
-		exit_with_error(fds, 0);
+		free_split(cmd);
+		free(fds);
+		exit(127);
 	}
 	if (execve(path, cmd, env) == -1)
 	{

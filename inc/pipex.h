@@ -56,5 +56,6 @@ void	ft_putstr_fd(char *str, int fd);
 int		only_spaces(const char *s);
 int		ft_isspace(char c);
 void	free_split(char **split);
+char	**get_line_content_path(char **env);
 
 #endif
